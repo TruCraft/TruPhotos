@@ -13,9 +13,32 @@ const packagePath = path.join(__dirname, '..', 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const version = packageJson.version;
 
-// Note: iOS version is managed via Xcode project settings (MARKETING_VERSION and CURRENT_PROJECT_VERSION)
-// To update iOS version, use Xcode or update the project.pbxproj file directly
-console.log(`📱 iOS: Update version in Xcode project settings`);
+// Update iOS project.pbxproj
+const pbxprojPath = path.join(__dirname, '..', 'ios', 'TruPhotos.xcodeproj', 'project.pbxproj');
+if (fs.existsSync(pbxprojPath)) {
+  let pbxprojContent = fs.readFileSync(pbxprojPath, 'utf8');
+
+  // Update MARKETING_VERSION (user-facing version string)
+  pbxprojContent = pbxprojContent.replace(
+    /MARKETING_VERSION = [^;]+;/g,
+    `MARKETING_VERSION = ${version};`
+  );
+
+  // Increment CURRENT_PROJECT_VERSION (build number)
+  const buildNumberMatch = pbxprojContent.match(/CURRENT_PROJECT_VERSION = (\d+);/);
+  if (buildNumberMatch) {
+    const currentBuild = parseInt(buildNumberMatch[1], 10);
+    const newBuild = currentBuild + 1;
+    pbxprojContent = pbxprojContent.replace(
+      /CURRENT_PROJECT_VERSION = \d+;/g,
+      `CURRENT_PROJECT_VERSION = ${newBuild};`
+    );
+    console.log(`📱 iOS build number: ${newBuild}`);
+  }
+
+  fs.writeFileSync(pbxprojPath, pbxprojContent);
+  console.log(`📱 iOS version: ${version}`);
+}
 
 // Update Android build.gradle
 const buildGradlePath = path.join(__dirname, '..', 'android', 'app', 'build.gradle');

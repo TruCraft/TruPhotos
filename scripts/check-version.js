@@ -42,7 +42,7 @@ if (!isPackageJsonStaged) {
     console.log(`✅ Version bumped: ${oldVersion} → ${newVersion}`);
     
     // Stage the updated files
-    execSync('git add package.json app.json');
+    execSync('git add package.json app.json android/app/build.gradle ios/TruPhotos.xcodeproj/project.pbxproj');
     console.log('📝 Staged version files');
   } catch (error) {
     console.error('❌ Failed to increment version:', error.message);
