@@ -11,6 +11,7 @@ import {
   LibrarySelectionScreen,
   ProfileOptionsScreen,
   AboutScreen,
+  MarkdownScreen,
 } from '../screens';
 import { RootStackParamList } from '../types';
 import { colors } from '../theme';
@@ -62,6 +63,13 @@ export const RootNavigator: React.FC = () => {
           <Stack.Screen
             name="About"
             component={AboutScreen}
+            options={{
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
+            name="Markdown"
+            component={MarkdownScreen}
             options={{
               animation: 'slide_from_right',
             }}

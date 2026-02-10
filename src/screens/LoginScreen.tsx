@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { colors, spacing, borderRadius, typography } from '../theme';
 import { useAuth } from '../context/AuthContext';
+import { getVersionString } from '../constants/version';
 import AppIcon from '../../assets/icon-design.svg';
 
 export const LoginScreen: React.FC = () => {
@@ -62,6 +64,9 @@ export const LoginScreen: React.FC = () => {
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Powered by Plex Media Server
+          </Text>
+          <Text style={styles.versionText}>
+            v{getVersionString(Platform.OS as 'ios' | 'android')}
           </Text>
         </View>
       </View>
@@ -142,6 +147,11 @@ const styles = StyleSheet.create({
   footerText: {
     ...typography.small,
     color: colors.textMuted,
+  },
+  versionText: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
   },
 });
 

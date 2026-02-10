@@ -6,13 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
-  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import InAppBrowser from 'react-native-inappbrowser-reborn';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { colors, spacing, typography, borderRadius } from '../theme';
 import { getVersionString } from '../constants/version';
 import AppIcon from '../../assets/icon-design.svg';
+import { RootStackParamList } from '../types';
+import { PRIVACY_POLICY, LICENSE_TEXT } from '../constants/legalContent';
+
+type AboutScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'About'>;
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -44,25 +49,66 @@ const InfoItem: React.FC<InfoItemProps> = ({ icon, title, subtitle, onPress }) =
 );
 
 export const AboutScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<AboutScreenNavigationProp>();
 
   const handleClose = () => {
     navigation.goBack();
   };
 
-  const handlePrivacyPolicy = async () => {
-    // TODO: Replace with your actual privacy policy URL
-    await Linking.openURL('https://github.com/jacobtruman/TruPhotos/blob/main/PRIVACY.md');
+  const openInAppBrowser = async (url: string) => {
+    try {
+      if (await InAppBrowser.isAvailable()) {
+        await InAppBrowser.open(url, {
+          // iOS Options
+          dismissButtonStyle: 'close',
+          preferredBarTintColor: colors.surface,
+          preferredControlTintColor: colors.primary,
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'pageSheet',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          // Android Options
+          showTitle: true,
+          toolbarColor: colors.surface,
+          secondaryToolbarColor: colors.background,
+          navigationBarColor: colors.background,
+          navigationBarDividerColor: colors.divider,
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+          forceCloseOnRedirection: false,
+          // Specify full animation resource identifier(package:anim/name)
+          // or only resource name(in case of animation bundled with app).
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right',
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error opening in-app browser:', error);
+    }
+  };
+
+  const handlePrivacyPolicy = () => {
+    navigation.navigate('Markdown', {
+      title: 'Privacy Policy',
+      content: PRIVACY_POLICY,
+    });
   };
 
   const handleOpenSource = async () => {
-    // Opens the GitHub repository
-    await Linking.openURL('https://github.com/jacobtruman/TruPhotos');
+    await openInAppBrowser('https://github.com/jacobtruman/TruPhotos');
   };
 
-  const handleLicense = async () => {
-    // Opens the MIT License file
-    await Linking.openURL('https://github.com/jacobtruman/TruPhotos/blob/main/LICENSE');
+  const handleLicense = () => {
+    navigation.navigate('Markdown', {
+      title: 'License',
+      content: LICENSE_TEXT,
+    });
   };
 
   return (
