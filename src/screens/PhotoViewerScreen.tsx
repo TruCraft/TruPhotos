@@ -388,7 +388,7 @@ export const PhotoViewerScreen: React.FC = () => {
                 removeClippedSubviews={false}
                 onScrollToIndexFailed={(info) => {
                   // Handle scroll failure by waiting and trying again
-                  const wait = new Promise(resolve => setTimeout(resolve, 100));
+                  const wait = new Promise<void>(resolve => setTimeout(resolve, 100));
                   wait.then(() => {
                     carouselFlatListRef.current?.scrollToIndex({
                       index: info.index,

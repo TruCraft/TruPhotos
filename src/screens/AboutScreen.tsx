@@ -100,8 +100,8 @@ export const AboutScreen: React.FC = () => {
     });
   };
 
-  const handleOpenSource = async () => {
-    await openInAppBrowser('https://github.com/jacobtruman/TruPhotos');
+  const handleSupportDevelopment = async () => {
+    await openInAppBrowser('https://buymeacoffee.com/jacobtruman');
   };
 
   const handleLicense = () => {
@@ -147,6 +147,17 @@ export const AboutScreen: React.FC = () => {
           />
         </View>
 
+        {/* Support */}
+        <Text style={styles.sectionTitle}>Support</Text>
+        <View style={styles.section}>
+          <InfoItem
+            icon="heart-outline"
+            title="Support Development"
+            subtitle="Buy me a coffee"
+            onPress={handleSupportDevelopment}
+          />
+        </View>
+
         {/* Legal */}
         <Text style={styles.sectionTitle}>Legal</Text>
         <View style={styles.section}>
@@ -160,12 +171,6 @@ export const AboutScreen: React.FC = () => {
             title="License"
             subtitle="MIT License"
             onPress={handleLicense}
-          />
-          <InfoItem
-            icon="code-slash-outline"
-            title="Open Source"
-            subtitle="View on GitHub"
-            onPress={handleOpenSource}
           />
         </View>
       </ScrollView>

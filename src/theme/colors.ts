@@ -78,5 +78,11 @@ export const typography = {
     fontWeight: 'normal' as const,
     color: colors.textMuted,
   },
+  code: {
+    fontSize: 14,
+    fontWeight: 'normal' as const,
+    fontFamily: 'monospace',
+    color: colors.textPrimary,
+  },
 };
 
