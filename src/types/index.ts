@@ -12,8 +12,8 @@ export interface Photo {
   duration?: number;
   albumId?: string;
   rating?: number; // User rating from 0-10 (10 = favorite)
-  title?: string; // Photo title from Plex
-  // File metadata from Plex
+  title?: string; // Photo title from Jellyfin
+  // File metadata from Jellyfin
   fileSize?: number; // File size in bytes
   format?: string; // File format (e.g., "jpeg", "png", "mp4")
   aspectRatio?: number; // Aspect ratio (e.g., 1.33, 1.78)
@@ -21,19 +21,11 @@ export interface Photo {
 
 export interface Album {
   id: string;
-  key?: string; // Plex album key for fetching photos (path-based)
-  ratingKey?: string; // Plex rating key for fetching metadata
   title: string;
   coverPhoto?: Photo;
   photoCount: number;
   createdAt: Date;
-  index?: number; // Custom sort order from Plex
-  ultraBlurColors?: {
-    topLeft: string;
-    topRight: string;
-    bottomLeft: string;
-    bottomRight: string;
-  }; // 4-corner colors from UltraBlurColors for gradient overlay
+  sortName?: string; // Custom sort order from Jellyfin
 }
 
 export interface PhotoGroup {
@@ -48,121 +40,67 @@ export interface ServerConfig {
   name: string;
 }
 
-// Plex Authentication Types
-export interface PlexPin {
-  id: number;
-  code: string;
-  expiresAt: string;
-  authToken: string | null;
-  trusted: boolean;
-  clientIdentifier: string;
-}
-
-export interface PlexUser {
-  id: number;
-  uuid: string;
-  username: string;
-  title: string;
-  email: string;
-  thumb: string;
-  authToken: string;
-  home: boolean;
-  subscription: {
-    active: boolean;
-    status: string;
-    plan: string;
+// Jellyfin Authentication Types
+export interface JellyfinUser {
+  Id: string;
+  Name: string;
+  ServerId: string;
+  ServerName?: string;
+  PrimaryImageTag?: string;
+  HasPassword: boolean;
+  HasConfiguredPassword: boolean;
+  LastLoginDate?: string;
+  LastActivityDate?: string;
+  Policy?: {
+    IsAdministrator: boolean;
+    IsHidden: boolean;
+    IsDisabled: boolean;
+    EnableAllFolders: boolean;
   };
 }
 
-export interface PlexProfile {
+export interface JellyfinAuthResponse {
+  User: JellyfinUser;
+  AccessToken: string;
+  ServerId: string;
+}
+
+export interface JellyfinServer {
+  name: string;
+  address: string;
   id: string;
-  uuid: string;
-  title: string;
-  thumb: string;
-  pin?: string;
-  home: boolean;
-  admin: boolean;
-  guest: boolean;
-  restricted: boolean;
+  version?: string;
+  accessToken?: string;
 }
 
-export interface PlexServer {
-  name: string;
-  address: string;
-  port: number;
-  version: string;
-  scheme: string;
-  host: string;
-  localAddresses: string;
-  machineIdentifier: string;
-  accessToken: string;
-  owned: boolean;
-  synced: boolean;
-  // All available connection URIs, ordered by preference (remote first)
-  connectionUris: string[];
+export interface JellyfinLibrary {
+  Id: string;
+  Name: string;
+  CollectionType?: string;
+  ItemId?: string;
 }
 
-export interface PlexResource {
-  name: string;
-  product: string;
-  productVersion: string;
-  platform: string;
-  platformVersion: string;
-  device: string;
-  clientIdentifier: string;
-  provides: string;
-  owned: boolean;
-  accessToken: string;
-  connections: PlexConnection[];
-}
-
-export interface PlexConnection {
-  protocol: string;
-  address: string;
-  port: number;
-  uri: string;
-  local: boolean;
-}
-
-export interface PlexLibrary {
-  key: string;
-  title: string;
-  type: string;
-  agent: string;
-  scanner: string;
-  thumb?: string;
-}
-
-export interface PlexAlbum {
-  ratingKey: string;
-  key: string;
-  title: string;
-  type: string;
-  thumb?: string;
-  addedAt: number;
-  updatedAt: number;
-  leafCount?: number; // Number of photos in album
-  index?: number;
-  UltraBlurColors?: {
-    topLeft?: string;
-    topRight?: string;
-    bottomRight?: string;
-    bottomLeft?: string;
+export interface JellyfinAlbum {
+  Id: string;
+  Name: string;
+  Type: string;
+  ImageTags?: {
+    Primary?: string;
   };
+  DateCreated?: string;
+  ChildCount?: number;
+  SortName?: string;
 }
 
 export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: PlexUser | null;
-  selectedProfile: PlexProfile | null;
-  profiles: PlexProfile[];
-  servers: PlexServer[];
+  user: JellyfinUser | null;
+  servers: JellyfinServer[];
   authToken: string | null;
-  clientIdentifier: string | null;
-  selectedServer: PlexServer | null;
-  selectedLibrary: PlexLibrary | null;
-  libraries: PlexLibrary[];
+  selectedServer: JellyfinServer | null;
+  selectedLibrary: JellyfinLibrary | null;
+  libraries: JellyfinLibrary[];
   selectedTab: keyof RootTabParamList;
 }
 
@@ -180,7 +118,6 @@ export interface SerializablePhoto extends Omit<Photo, 'createdAt' | 'modifiedAt
 export type RootStackParamList = {
   Main: { screen?: 'Timeline' | 'Library' } | undefined;
   Login: undefined;
-  ProfileSelection: undefined;
   ServerSelection: undefined;
   LibrarySelection: undefined;
   ProfileOptions: undefined;
@@ -189,15 +126,11 @@ export type RootStackParamList = {
   PhotoViewer: { photo: SerializablePhoto; photos: SerializablePhoto[]; initialIndex: number };
   AlbumDetail: {
     albumId: string;
-    albumKey?: string;
-    albumRatingKey?: string;
     albumTitle: string;
     breadcrumb?: string; // Breadcrumb path like "2009 / May"
     breadcrumbHistory?: Array<{
       title: string;
       albumId?: string;
-      albumKey?: string;
-      albumRatingKey?: string;
       isLibrary?: boolean; // True if this is the library root
     }>; // History of breadcrumb items for navigation
   };

@@ -1,31 +1,32 @@
-// Plex-inspired dark theme colors
+// Jellyfin-inspired dark theme colors
 export const colors = {
-  // Primary colors
-  primary: '#E5A00D', // Plex orange/gold
-  primaryDark: '#CC8A00',
-  primaryLight: '#F5B82E',
-  
-  // Background colors
-  background: '#1F1F1F',
-  backgroundDark: '#121212',
-  backgroundLight: '#2A2A2A',
-  surface: '#282828',
-  surfaceLight: '#333333',
-  
+  // Primary colors - Jellyfin brand colors
+  primary: '#00A4DC', // Jellyfin blue
+  primaryDark: '#0082B3',
+  primaryLight: '#33B8E5',
+
+  // Background colors - Jellyfin dark theme
+  background: '#101010', // Jellyfin official background
+  backgroundDark: '#0A0A0A',
+  backgroundLight: '#1A1A1A',
+  backgroundMedium: '#181818',
+  surface: '#1C1C1C',
+  surfaceLight: '#252525',
+
   // Text colors
   textPrimary: '#FFFFFF',
   textSecondary: '#B3B3B3',
   textMuted: '#666666',
-  
+
   // Status colors
   success: '#4CAF50',
   error: '#F44336',
   warning: '#FF9800',
-  info: '#2196F3',
-  
+  info: '#00A4DC', // Use Jellyfin blue for info
+
   // Other
-  border: '#404040',
-  divider: '#333333',
+  border: '#2A2A2A',
+  divider: '#1F1F1F',
   overlay: 'rgba(0, 0, 0, 0.7)',
   transparent: 'transparent',
 };

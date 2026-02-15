@@ -153,7 +153,7 @@ The app displays version info in the Settings screen:
 - Complete UI redesign
 - Removed legacy authentication
 - New navigation structure
-- Requires Plex Pass subscription
+- Migrated from Plex to Jellyfin
 ```
 
 ## Build Number Management

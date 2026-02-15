@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Album, PlexServer } from '../types';
+import { Album, JellyfinServer } from '../types';
 import { getFolderItemCount } from '../services/plexService';
 
 /**
  * Custom hook to fetch and manage folder item counts
  * @param folders - Array of folders to fetch counts for
- * @param server - The Plex server
+ * @param server - The Jellyfin server
  * @param token - Server access token
  * @returns Object containing folder counts keyed by folder ID
  */
 export const useFolderCounts = (
   folders: Album[],
-  server: PlexServer | null,
+  server: JellyfinServer | null,
   token: string | null
 ): Record<string, number> => {
   const [folderCounts, setFolderCounts] = useState<Record<string, number>>({});

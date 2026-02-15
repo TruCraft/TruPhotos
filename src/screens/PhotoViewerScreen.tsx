@@ -19,7 +19,7 @@ import Share from 'react-native-share';
 import { colors, spacing } from '../theme';
 import { RootStackParamList, Photo, serializableToPhoto } from '../types';
 import { downloadPhoto } from '../services/downloadService';
-import { ratePhoto, getEnrichedPhotoMetadata, EnrichedPhotoMetadata } from '../services/plexService';
+import { markPhotoAsFavorite } from '../services/jellyfinService';
 import { useAuth } from '../context/AuthContext';
 import { ZoomableImage } from '../components';
 
@@ -32,7 +32,7 @@ export const PhotoViewerScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<PhotoViewerRouteProp>();
   const { photos: serializablePhotos, initialIndex } = route.params;
-  const { selectedServer } = useAuth();
+  const { selectedServer, user, authToken } = useAuth();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   // Convert serializable photos back to Photo objects with Date fields
@@ -44,15 +44,13 @@ export const PhotoViewerScreen: React.FC = () => {
   const [favoriting, setFavoriting] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [loadingMetadata, setLoadingMetadata] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  // Cache enriched metadata by photo id
-  const [enrichedMetadata, setEnrichedMetadata] = useState<Record<string, EnrichedPhotoMetadata>>({});
-  // Track favorite status for each photo by id
+  // Track favorite status for each photo by id (Jellyfin uses IsFavorite boolean)
   const [favorites, setFavorites] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     photos.forEach(photo => {
-      initial[photo.id] = photo.rating === 10;
+      // For Jellyfin, we'll use the rating field to store IsFavorite (1 = favorite, 0 = not favorite)
+      initial[photo.id] = photo.rating === 1;
     });
     return initial;
   });
@@ -64,43 +62,6 @@ export const PhotoViewerScreen: React.FC = () => {
 
   const currentPhoto = photos[currentIndex];
   const isFavorite = favorites[currentPhoto.id] || false;
-  const currentEnrichedMetadata = enrichedMetadata[currentPhoto.id];
-
-  // Fetch enriched metadata when info modal opens
-  const fetchEnrichedMetadata = useCallback(async () => {
-    // Skip if we already have enriched metadata for this photo
-    if (enrichedMetadata[currentPhoto.id]) return;
-    // Skip if photo already has full metadata (from Library view)
-    if (currentPhoto.fileSize && currentPhoto.width > 0) return;
-
-    if (!selectedServer?.accessToken) return;
-
-    setLoadingMetadata(true);
-    try {
-      const metadata = await getEnrichedPhotoMetadata(
-        selectedServer,
-        selectedServer.accessToken,
-        currentPhoto.id
-      );
-      if (metadata) {
-        setEnrichedMetadata(prev => ({
-          ...prev,
-          [currentPhoto.id]: metadata,
-        }));
-      }
-    } catch (error) {
-      console.error('Failed to fetch photo metadata:', error);
-    } finally {
-      setLoadingMetadata(false);
-    }
-  }, [currentPhoto.id, currentPhoto.fileSize, currentPhoto.width, currentPhoto.filename, currentPhoto.fullUri, enrichedMetadata, selectedServer]);
-
-  // Fetch metadata when info modal opens
-  useEffect(() => {
-    if (showInfoModal) {
-      fetchEnrichedMetadata();
-    }
-  }, [showInfoModal, fetchEnrichedMetadata]);
 
   // Auto-scroll carousel to current photo when index changes
   useEffect(() => {
@@ -118,14 +79,14 @@ export const PhotoViewerScreen: React.FC = () => {
     }
   }, [currentIndex, photos.length]);
 
-  // Get display values - prefer enriched metadata, fall back to photo data
-  const displayFilename = currentEnrichedMetadata?.filename || currentPhoto.filename;
-  const displayFilePath = currentEnrichedMetadata?.filePath || currentPhoto.filePath;
-  const displayWidth = currentEnrichedMetadata?.width || currentPhoto.width;
-  const displayHeight = currentEnrichedMetadata?.height || currentPhoto.height;
-  const displayFileSize = currentEnrichedMetadata?.fileSize || currentPhoto.fileSize;
-  const displayFormat = currentEnrichedMetadata?.format || currentPhoto.format;
-  const displayAspectRatio = currentEnrichedMetadata?.aspectRatio || currentPhoto.aspectRatio;
+  // Get display values from photo data
+  const displayFilename = currentPhoto.filename;
+  const displayFilePath = currentPhoto.filePath;
+  const displayWidth = currentPhoto.width;
+  const displayHeight = currentPhoto.height;
+  const displayFileSize = currentPhoto.fileSize;
+  const displayFormat = currentPhoto.format;
+  const displayAspectRatio = currentPhoto.aspectRatio;
 
   // Format duration in milliseconds to readable format
   const formatDuration = (ms: number): string => {
@@ -218,22 +179,21 @@ export const PhotoViewerScreen: React.FC = () => {
   }, [currentPhoto]);
 
   const handleFavorite = useCallback(async () => {
-    if (!selectedServer) {
+    if (!selectedServer || !user || !authToken) {
       Alert.alert('Error', 'Not connected to a server');
       return;
     }
 
     setFavoriting(true);
     try {
-      // Toggle favorite: if currently favorite (10), set to -1 (reset), otherwise set to 10
-      const newRating = isFavorite ? -1 : 10;
-      // Use the server's accessToken which is scoped to the current profile's permissions
-      const success = await ratePhoto(selectedServer, selectedServer.accessToken, currentPhoto.id, newRating);
+      // Toggle favorite status
+      const newFavoriteStatus = !isFavorite;
+      const success = await markPhotoAsFavorite(selectedServer, user.Id, authToken, currentPhoto.id, newFavoriteStatus);
 
       if (success) {
         setFavorites(prev => ({
           ...prev,
-          [currentPhoto.id]: !isFavorite,
+          [currentPhoto.id]: newFavoriteStatus,
         }));
       } else {
         Alert.alert('Error', 'Failed to update favorite status');
@@ -244,7 +204,7 @@ export const PhotoViewerScreen: React.FC = () => {
     } finally {
       setFavoriting(false);
     }
-  }, [currentPhoto, isFavorite, selectedServer]);
+  }, [currentPhoto, isFavorite, selectedServer, user, authToken]);
 
   const toggleControls = useCallback(() => {
     setShowControls(prev => !prev);
@@ -470,14 +430,6 @@ export const PhotoViewerScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.modalBody}>
-              {/* Loading indicator */}
-              {loadingMetadata && (
-                <View style={styles.metadataLoading}>
-                  <ActivityIndicator size="small" color={colors.primary} />
-                  <Text style={styles.metadataLoadingText}>Loading details...</Text>
-                </View>
-              )}
-
               {/* File Info Section */}
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Filename</Text>

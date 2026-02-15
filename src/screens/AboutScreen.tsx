@@ -128,7 +128,7 @@ export const AboutScreen: React.FC = () => {
             <AppIcon width={150} height={95} />
           </View>
           <Text style={styles.appName}>Tru Photos</Text>
-          <Text style={styles.appTagline}>Browse and manage your Plex photos</Text>
+          <Text style={styles.appTagline}>Browse and manage your Jellyfin photos</Text>
           <Text style={styles.version}>{getVersionString(Platform.OS as 'ios' | 'android')}</Text>
         </View>
 
@@ -142,8 +142,8 @@ export const AboutScreen: React.FC = () => {
           />
           <InfoItem
             icon="server-outline"
-            title="Plex Integration"
-            subtitle="Powered by Plex Media Server"
+            title="Jellyfin Integration"
+            subtitle="Powered by Jellyfin Media Server"
           />
         </View>
 

@@ -7,15 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Version management system with automated build number tracking
-
 ### Changed
+- **BREAKING**: Migrated from Plex to Jellyfin API
+- Replaced Plex OAuth with Jellyfin username/password authentication
+- Removed profile selection (Jellyfin doesn't have profiles)
+- Updated all API calls to use Jellyfin endpoints
+- Changed favorite system from 0-10 rating to boolean IsFavorite
+- Updated authentication flow to use direct server connection
+- Updated color scheme to match Jellyfin branding (blue accent, darker backgrounds)
 - Improved photo and folder grid spacing (4px margins)
 - Updated photo thumbnails with rounded corners
 
-### Fixed
-- Photo sorting now uses Plex's original order
+### Added
+- Version management system with automated build number tracking
+- Support for Jellyfin Media Server
+- Manual server address entry
+
+### Removed
+- Plex OAuth authentication
+- Profile management (not applicable to Jellyfin)
+- Plex-specific features (enriched metadata, rating system)
 
 ## [1.0.0] - 2026-01-30
 

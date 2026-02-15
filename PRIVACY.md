@@ -1,22 +1,21 @@
 # Privacy Policy for Tru Photos
 
-**Last Updated: January 30, 2026**
+**Last Updated: February 13, 2026**
 
 ## Overview
 
-Tru Photos is a mobile application that allows you to browse and manage photos from your Plex Media Server. This privacy policy explains how the app handles your data.
+Tru Photos is a mobile application that allows you to browse and manage photos from your Jellyfin Media Server. This privacy policy explains how the app handles your data.
 
 ## Data Collection
 
 ### What We Collect
 
-Tru Photos does **NOT** collect, store, or transmit any personal data to third-party servers. All data remains on your device and your Plex Media Server.
+Tru Photos does **NOT** collect, store, or transmit any personal data to third-party servers. All data remains on your device and your Jellyfin Media Server.
 
 The app stores the following information **locally on your device only**:
 
-- **Plex Authentication Token**: Used to authenticate with your Plex account
-- **Selected Profile**: Your chosen Plex profile
-- **Selected Server**: Your chosen Plex Media Server
+- **Jellyfin Authentication Token**: Used to authenticate with your Jellyfin server
+- **Selected Server**: Your chosen Jellyfin Media Server
 - **Selected Library**: Your chosen photo library
 - **App Preferences**: Settings like selected tab, grid size, etc.
 
@@ -32,21 +31,18 @@ The app stores the following information **locally on your device only**:
 
 All data is stored locally on your device using:
 
-- **Expo SecureStore**: For sensitive data like authentication tokens
+- **React Native Keychain**: For sensitive data like authentication tokens
 - **AsyncStorage**: For app preferences and settings
 
-This data is **never transmitted** to any server except your own Plex Media Server.
+This data is **never transmitted** to any server except your own Jellyfin Media Server.
 
 ## Third-Party Services
 
-### Plex Media Server
+### Jellyfin Media Server
 
-Tru Photos connects directly to:
+Tru Photos connects directly to your Jellyfin Media Server for accessing your photos.
 
-1. **Plex.tv** - For authentication and server discovery
-2. **Your Plex Media Server** - For accessing your photos
-
-Please refer to [Plex's Privacy Policy](https://www.plex.tv/about/privacy-legal/) for information about how Plex handles your data.
+Please refer to [Jellyfin's documentation](https://jellyfin.org/) for information about Jellyfin.
 
 ### No Other Third Parties
 
@@ -60,15 +56,15 @@ Tru Photos does not use:
 
 The app requests the following permissions:
 
-- **Internet Access**: Required to connect to your Plex Media Server
+- **Internet Access**: Required to connect to your Jellyfin Media Server
 - **Media Library Access**: Optional, only if you choose to download photos to your device
 - **Storage Access**: Optional, only if you choose to download photos
 
 ## Data Security
 
-- Authentication tokens are stored securely using Expo SecureStore
-- All communication with Plex servers uses HTTPS encryption
-- No data is transmitted to servers other than Plex
+- Authentication tokens are stored securely using React Native Keychain
+- All communication with Jellyfin servers uses HTTPS encryption
+- No data is transmitted to servers other than your Jellyfin server
 
 ## Your Rights
 
@@ -76,11 +72,11 @@ You have the right to:
 
 - **Delete Your Data**: Uninstalling the app removes all locally stored data
 - **Sign Out**: Removes authentication tokens from the device
-- **Switch Profiles/Servers**: Change which Plex account or server you use
+- **Change Servers**: Change which Jellyfin server you use
 
 ## Children's Privacy
 
-Tru Photos does not knowingly collect data from children under 13. The app is designed for users who have access to a Plex Media Server.
+Tru Photos does not knowingly collect data from children under 13. The app is designed for users who have access to a Jellyfin Media Server.
 
 ## Changes to This Policy
 
@@ -100,7 +96,7 @@ https://github.com/jacobtruman/TruPhotos/issues
 
 **TL;DR**: Tru Photos is a privacy-focused app that:
 - ✅ Stores data only on your device
-- ✅ Connects only to your Plex servers
+- ✅ Connects only to your Jellyfin servers
 - ✅ Does not collect analytics or tracking data
 - ✅ Does not share data with third parties
 - ✅ Is open source and transparent

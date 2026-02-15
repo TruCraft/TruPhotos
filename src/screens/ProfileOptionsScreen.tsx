@@ -54,14 +54,10 @@ const OptionItem: React.FC<OptionItemProps> = ({
 
 export const ProfileOptionsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { selectedProfile, selectedServer, selectedLibrary, clearProfile, clearServer, logout } = useAuth();
+  const { user, selectedServer, selectedLibrary, clearServer, logout } = useAuth();
 
   const handleClose = () => {
     navigation.goBack();
-  };
-
-  const handleSwitchProfile = async () => {
-    await clearProfile();
   };
 
   const handleChangeServer = async () => {
@@ -79,23 +75,19 @@ export const ProfileOptionsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>Settings</Text>
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
           <Ionicons name="close" size={28} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Profile Info */}
+        {/* User Info */}
         <View style={styles.profileSection}>
-          {selectedProfile?.thumb ? (
-            <Image source={{ uri: selectedProfile.thumb }} style={styles.profileAvatar} />
-          ) : (
-            <View style={[styles.profileAvatar, styles.profileAvatarPlaceholder]}>
-              <Ionicons name="person" size={40} color={colors.textSecondary} />
-            </View>
-          )}
-          <Text style={styles.profileName}>{selectedProfile?.title || 'Unknown Profile'}</Text>
+          <View style={[styles.profileAvatar, styles.profileAvatarPlaceholder]}>
+            <Ionicons name="person" size={40} color={colors.textSecondary} />
+          </View>
+          <Text style={styles.profileName}>{user?.Name || 'Unknown User'}</Text>
           {selectedServer && (
             <Text style={styles.serverName}>{selectedServer.name}</Text>
           )}
@@ -106,12 +98,6 @@ export const ProfileOptionsScreen: React.FC = () => {
 
         {/* Options */}
         <View style={styles.section}>
-          <OptionItem
-            icon="swap-horizontal"
-            title="Switch Profile"
-            subtitle="Change to a different profile"
-            onPress={handleSwitchProfile}
-          />
           <OptionItem
             icon="server-outline"
             materialIcon="storage"

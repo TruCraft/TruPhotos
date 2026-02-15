@@ -11,19 +11,19 @@ import {
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { colors, spacing, typography, borderRadius } from '../theme';
 import { useAuth } from '../context/AuthContext';
-import { PlexLibrary } from '../types';
+import { JellyfinLibrary } from '../types';
 
 export const LibraryDropdown: React.FC = () => {
   const { selectedLibrary, libraries, selectLibrary } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (library: PlexLibrary) => {
+  const handleSelect = (library: JellyfinLibrary) => {
     selectLibrary(library);
     setIsOpen(false);
   };
 
-  const renderLibraryItem = ({ item }: { item: PlexLibrary }) => {
-    const isSelected = item.key === selectedLibrary?.key;
+  const renderLibraryItem = ({ item }: { item: JellyfinLibrary }) => {
+    const isSelected = item.Id === selectedLibrary?.Id;
     return (
       <TouchableOpacity
         style={[styles.libraryItem, isSelected && styles.libraryItemSelected]}
@@ -39,7 +39,7 @@ export const LibraryDropdown: React.FC = () => {
           style={[styles.libraryItemText, isSelected && styles.libraryItemTextSelected]}
           numberOfLines={1}
         >
-          {item.title}
+          {item.Name}
         </Text>
         {isSelected && (
           <Ionicons name="checkmark" size={20} color={colors.primary} />
@@ -57,7 +57,7 @@ export const LibraryDropdown: React.FC = () => {
       >
         <Ionicons name="library-outline" size={20} color={colors.primary} />
         <Text style={styles.libraryName} numberOfLines={1}>
-          {selectedLibrary?.title || 'Select Library'}
+          {selectedLibrary?.Name || 'Select Library'}
         </Text>
         <Ionicons name="chevron-down" size={18} color={colors.primary} />
       </TouchableOpacity>
@@ -82,7 +82,7 @@ export const LibraryDropdown: React.FC = () => {
             <FlatList
               data={libraries}
               renderItem={renderLibraryItem}
-              keyExtractor={(item) => item.key}
+              keyExtractor={(item) => item.Id}
               style={styles.libraryList}
               showsVerticalScrollIndicator={false}
             />

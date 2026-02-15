@@ -13,17 +13,17 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { colors, spacing, borderRadius, typography, commonStyles } from '../theme';
 import { FloatingRefreshButton } from '../components';
 import { useAuth } from '../context/AuthContext';
-import { PlexLibrary } from '../types';
+import { JellyfinLibrary } from '../types';
 
 export const LibrarySelectionScreen: React.FC = () => {
-  const { libraries, selectLibrary, refreshLibraries, clearProfile, clearServer, logout, isLoading, selectedServer } = useAuth();
+  const { libraries, selectLibrary, refreshLibraries, clearServer, logout, isLoading, selectedServer } = useAuth();
 
   // Refresh libraries when the screen mounts to ensure we have the latest data
   useEffect(() => {
     refreshLibraries();
   }, [refreshLibraries]);
 
-  const renderLibrary = ({ item }: { item: PlexLibrary }) => (
+  const renderLibrary = ({ item }: { item: JellyfinLibrary }) => (
     <TouchableOpacity
       style={styles.libraryCard}
       onPress={() => selectLibrary(item)}
@@ -33,7 +33,7 @@ export const LibrarySelectionScreen: React.FC = () => {
         <Ionicons name="images" size={28} color={colors.primary} />
       </View>
       <View style={styles.libraryInfo}>
-        <Text style={styles.libraryName}>{item.title}</Text>
+        <Text style={styles.libraryName}>{item.Name}</Text>
         <Text style={styles.libraryDetails}>Photo Library</Text>
       </View>
       <Ionicons name="chevron-forward" size={24} color={colors.textMuted} />
@@ -45,15 +45,11 @@ export const LibrarySelectionScreen: React.FC = () => {
       <Ionicons name="images-outline" size={64} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>No Photo Libraries Found</Text>
       <Text style={styles.emptySubtitle}>
-        This profile doesn't have access to any photo libraries on this server.
+        No photo libraries were found on this server.
       </Text>
       <TouchableOpacity style={styles.refreshButton} onPress={refreshLibraries}>
         <Ionicons name="refresh" size={20} color={colors.primary} />
         <Text style={styles.refreshButtonText}>Refresh</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.switchProfileButton} onPress={clearProfile}>
-        <Ionicons name="people" size={20} color={colors.textPrimary} />
-        <Text style={styles.switchProfileButtonText}>Switch Profile</Text>
       </TouchableOpacity>
     </View>
   );
@@ -90,7 +86,7 @@ export const LibrarySelectionScreen: React.FC = () => {
         <FlatList
           data={libraries}
           renderItem={renderLibrary}
-          keyExtractor={(item) => item.key}
+          keyExtractor={(item) => item.Id}
           contentContainerStyle={styles.libraryList}
           ListEmptyComponent={ListEmptyComponent}
           ItemSeparatorComponent={() => <View style={styles.separator} />}

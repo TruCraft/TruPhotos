@@ -6,22 +6,21 @@ import { AlbumCard, ProfileButton, LibraryDropdown, LoadingState } from '../comp
 import { colors, spacing, commonStyles } from '../theme';
 import { Album, RootStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { getAlbumsFromLibrary, convertPlexAlbumsToAlbums } from '../services/plexService';
+import { getAlbumsFromLibrary, convertJellyfinAlbumsToAlbums } from '../services/jellyfinService';
 import { useFolderCounts } from '../hooks/useFolderCounts';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const AlbumsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { selectedServer, selectedLibrary } = useAuth();
+  const { selectedServer, selectedLibrary, user, authToken } = useAuth();
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Use custom hook to fetch folder counts
-  const serverToken = selectedServer?.accessToken || null;
-  const folderCounts = useFolderCounts(albums, selectedServer, serverToken);
+  const folderCounts = useFolderCounts(albums, selectedServer, authToken);
 
   const fetchAlbums = useCallback(async () => {
     if (!selectedServer || !selectedLibrary) {
@@ -30,17 +29,16 @@ export const AlbumsScreen: React.FC = () => {
       return;
     }
 
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    if (!user || !authToken) {
       setLoading(false);
-      setError('No server access token');
+      setError('Not authenticated');
       return;
     }
 
     try {
       setError(null);
-      const plexAlbums = await getAlbumsFromLibrary(selectedServer, serverToken, selectedLibrary.key);
-      const fetchedAlbums = convertPlexAlbumsToAlbums(plexAlbums, selectedServer, serverToken);
+      const jellyfinAlbums = await getAlbumsFromLibrary(selectedServer, user.Id, authToken, selectedLibrary.Id);
+      const fetchedAlbums = convertJellyfinAlbumsToAlbums(jellyfinAlbums, selectedServer, authToken);
       setAlbums(fetchedAlbums);
     } catch (err) {
       console.error('Failed to fetch albums:', err);
@@ -49,7 +47,7 @@ export const AlbumsScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedServer, selectedLibrary]);
+  }, [selectedServer, selectedLibrary, user, authToken]);
 
   useEffect(() => {
     fetchAlbums();

@@ -7,7 +7,7 @@ import { PhotoThumbnail, AlbumCard, LoadingState } from '../components';
 import { colors, spacing, typography, commonStyles } from '../theme';
 import { RootStackParamList, Photo, Album, photoToSerializable } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { getFolderContents, convertPlexPhotosToPhotos, convertPlexAlbumsToAlbums } from '../services/plexService';
+import { getFolderContents, convertJellyfinPhotosToPhotos, convertJellyfinAlbumsToAlbums } from '../services/jellyfinService';
 import { useFolderCounts } from '../hooks/useFolderCounts';
 
 type AlbumDetailRouteProp = RouteProp<RootStackParamList, 'AlbumDetail'>;
@@ -25,7 +25,7 @@ export const AlbumDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<AlbumDetailRouteProp>();
   const { albumId, albumKey, albumRatingKey, albumTitle, breadcrumb, breadcrumbHistory = [] } = route.params;
-  const { selectedServer } = useAuth();
+  const { selectedServer, user, authToken } = useAuth();
 
   const [folders, setFolders] = useState<Album[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -34,32 +34,28 @@ export const AlbumDetailScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Use custom hook to fetch folder counts
-  const serverToken = selectedServer?.accessToken || null;
-  const folderCounts = useFolderCounts(folders, selectedServer, serverToken);
+  const folderCounts = useFolderCounts(folders, selectedServer, authToken);
 
   const fetchContents = useCallback(async () => {
-    if (!selectedServer || !albumKey) {
+    if (!selectedServer || !albumId) {
       setLoading(false);
       setError('Unable to load folder contents');
       return;
     }
 
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    if (!user || !authToken) {
       setLoading(false);
-      setError('No server access token');
+      setError('Not authenticated');
       return;
     }
 
     try {
       setError(null);
-      // Use ratingKey if available, otherwise fall back to key
-      const contents = await getFolderContents(selectedServer, serverToken, albumRatingKey || albumKey);
+      // Use albumId to fetch folder contents
+      const contents = await getFolderContents(selectedServer, user.Id, authToken, albumId);
 
-      const fetchedFolders = convertPlexAlbumsToAlbums(contents.folders, selectedServer, serverToken);
-      const fetchedPhotos = convertPlexPhotosToPhotos(contents.photos, selectedServer, serverToken);
-
-      // Use Plex's original order (no sorting)
+      const fetchedFolders = convertJellyfinAlbumsToAlbums(contents.folders, selectedServer, authToken);
+      const fetchedPhotos = convertJellyfinPhotosToPhotos(contents.photos, selectedServer, authToken);
 
       setFolders(fetchedFolders);
       setPhotos(fetchedPhotos);
@@ -70,7 +66,7 @@ export const AlbumDetailScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedServer, albumKey, albumRatingKey]);
+  }, [selectedServer, user, authToken, albumId]);
 
   useEffect(() => {
     fetchContents();

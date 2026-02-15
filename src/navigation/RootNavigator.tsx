@@ -6,7 +6,6 @@ import {
   PhotoViewerScreen,
   AlbumDetailScreen,
   LoginScreen,
-  ProfileSelectionScreen,
   ServerSelectionScreen,
   LibrarySelectionScreen,
   ProfileOptionsScreen,
@@ -20,11 +19,10 @@ import { useAuth } from '../context/AuthContext';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
-  const { authToken, selectedProfile, selectedServer, selectedLibrary } = useAuth();
+  const { authToken, selectedServer, selectedLibrary } = useAuth();
 
   // Determine which screens to show based on auth state
   const isAuthenticated = !!authToken;
-  const hasProfile = !!selectedProfile;
   const hasServer = !!selectedServer;
   const hasLibrary = !!selectedLibrary;
 
@@ -39,11 +37,8 @@ export const RootNavigator: React.FC = () => {
       {!isAuthenticated ? (
         // Not logged in - show login screen
         <Stack.Screen name="Login" component={LoginScreen} />
-      ) : !hasProfile ? (
-        // Logged in but no profile selected
-        <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
       ) : !hasServer ? (
-        // Profile selected but no server selected
+        // Logged in but no server selected
         <Stack.Screen name="ServerSelection" component={ServerSelectionScreen} />
       ) : !hasLibrary ? (
         // Server selected but no library selected

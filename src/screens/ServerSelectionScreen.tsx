@@ -15,13 +15,13 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { colors, spacing, borderRadius, typography, commonStyles } from '../theme';
 import { FloatingRefreshButton } from '../components';
 import { useAuth } from '../context/AuthContext';
-import { PlexServer } from '../types';
+import { JellyfinServer } from '../types';
 
 export const ServerSelectionScreen: React.FC = () => {
   const { servers, selectServer, refreshServers, isLoading, selectedProfile } = useAuth();
   const [selectingServerId, setSelectingServerId] = useState<string | null>(null);
 
-  const handleSelectServer = async (server: PlexServer) => {
+  const handleSelectServer = async (server: JellyfinServer) => {
     setSelectingServerId(server.machineIdentifier);
     try {
       await selectServer(server);
@@ -38,7 +38,7 @@ export const ServerSelectionScreen: React.FC = () => {
     }
   };
 
-  const renderServer = ({ item }: { item: PlexServer }) => {
+  const renderServer = ({ item }: { item: JellyfinServer }) => {
     const isSelecting = selectingServerId === item.machineIdentifier;
 
     return (
@@ -90,7 +90,7 @@ export const ServerSelectionScreen: React.FC = () => {
       <Ionicons name="server-outline" size={64} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>No Servers Found</Text>
       <Text style={styles.emptySubtitle}>
-        We couldn't find any Plex servers with photo libraries.
+        We couldn't find any Jellyfin servers with photo libraries.
       </Text>
       <TouchableOpacity style={styles.refreshButton} onPress={refreshServers}>
         <Ionicons name="refresh" size={20} color={colors.primary} />

@@ -7,7 +7,7 @@ import { colors, spacing, commonStyles } from '../theme';
 import { Photo, RootStackParamList, photoToSerializable } from '../types';
 import { groupPhotosByDate } from '../utils/photoUtils';
 import { useAuth } from '../context/AuthContext';
-import { getPhotosFromLibrary, convertPlexPhotosToPhotos, PhotosResult } from '../services/plexService';
+import { getPhotosFromLibrary, convertJellyfinPhotosToPhotos, PhotosResult } from '../services/jellyfinService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -15,7 +15,7 @@ const PAGE_SIZE = 1000;
 
 export const PhotosScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { selectedServer, selectedLibrary } = useAuth();
+  const { selectedServer, selectedLibrary, user, authToken } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -37,18 +37,16 @@ export const PhotosScreen: React.FC = () => {
       return;
     }
 
-    // Use the server's access token, not the user's auth token
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    if (!user || !authToken) {
       setLoading(false);
-      setError('No server access token');
+      setError('Not authenticated');
       return;
     }
 
     try {
       setError(null);
-      const result = await getPhotosFromLibrary(selectedServer, serverToken, selectedLibrary.key, 0, PAGE_SIZE);
-      const fetchedPhotos = convertPlexPhotosToPhotos(result.photos, selectedServer, serverToken);
+      const result = await getPhotosFromLibrary(selectedServer, user.Id, authToken, selectedLibrary.Id, 0, PAGE_SIZE);
+      const fetchedPhotos = convertJellyfinPhotosToPhotos(result.photos, selectedServer, authToken);
 
       setPhotos(fetchedPhotos);
       setHasMore(result.hasMore);
@@ -60,19 +58,16 @@ export const PhotosScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedServer, selectedLibrary]);
+  }, [selectedServer, selectedLibrary, user, authToken]);
 
   const loadMorePhotos = useCallback(async () => {
-    if (!hasMore || loadingMore || !selectedServer || !selectedLibrary) return;
-
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) return;
+    if (!hasMore || loadingMore || !selectedServer || !selectedLibrary || !user || !authToken) return;
 
     setLoadingMore(true);
     try {
       const start = photos.length;
-      const result = await getPhotosFromLibrary(selectedServer, serverToken, selectedLibrary.key, start, PAGE_SIZE);
-      const newPhotos = convertPlexPhotosToPhotos(result.photos, selectedServer, serverToken);
+      const result = await getPhotosFromLibrary(selectedServer, user.Id, authToken, selectedLibrary.Id, start, PAGE_SIZE);
+      const newPhotos = convertJellyfinPhotosToPhotos(result.photos, selectedServer, authToken);
       setPhotos(prev => [...prev, ...newPhotos]);
       setHasMore(result.hasMore);
     } catch (err) {
@@ -80,7 +75,7 @@ export const PhotosScreen: React.FC = () => {
     } finally {
       setLoadingMore(false);
     }
-  }, [hasMore, loadingMore, photos.length, selectedServer, selectedLibrary]);
+  }, [hasMore, loadingMore, photos.length, selectedServer, selectedLibrary, user, authToken]);
 
   useEffect(() => {
     fetchPhotos();
