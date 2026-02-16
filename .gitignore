@@ -76,3 +76,5 @@ yarn-error.log
 
 # Auto-generated files
 src/constants/legalContent.ts
+
+android/app/truphotos-release.keystore
