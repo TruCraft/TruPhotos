@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Version management system with automated build number tracking
+- Settings screen with profile/server switching and sign out
+- About screen with app info, privacy policy, and license viewer
+- Markdown viewer screen for displaying formatted documents
+- Library dropdown component for switching between photo libraries
+- Profile button component for quick access to profile options
+- Floating refresh button component
+- Legal content auto-generation script (LICENSE and PRIVACY.md to TypeScript)
+- In-app browser support for external links
+- Husky git hooks for automated version management
+- Pre-commit hook for automatic version bumping
+- NPM scripts for legal content generation (runs before builds)
 
 ### Changed
 - Improved photo and folder grid spacing (4px margins)
@@ -38,11 +49,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Folder cards with gradient overlays
 
 ### Technical
-- React Native 0.81.5
-- Expo SDK 54
-- TypeScript 5.9.2
+- React Native 0.83.1
+- React 19.2.0
+- TypeScript 5.8.3
 - React Navigation 7.x
-- EAS Build support
 
 ---
 
@@ -73,4 +83,30 @@ git add package.json app.json CHANGELOG.md
 git commit -m "chore: bump version to X.Y.Z"
 npm run build:android  # or build:ios
 ```
+
+## Available NPM Scripts
+
+### Development
+- `npm start` - Start Metro bundler
+- `npm run android` - Run on Android device/emulator
+- `npm run ios` - Run on iOS device/simulator
+
+### Building
+- `npm run build:android` - Build Android release APK
+- `npm run install:android` - Install release APK on connected device
+
+### Versioning
+- `npm run version:patch` - Bump patch version (bug fixes)
+- `npm run version:minor` - Bump minor version (new features)
+- `npm run version:major` - Bump major version (breaking changes)
+
+### Utilities
+- `npm run generate:legal` - Generate legal content TypeScript constants
+- `npm run lint` - Run ESLint
+- `npm test` - Run Jest tests
+
+### Pre-hooks (automatic)
+- `prestart` - Runs `generate:legal` before starting Metro
+- `prebuild:android` - Runs `generate:legal` before Android builds
+- `prepare` - Sets up Husky git hooks
 
