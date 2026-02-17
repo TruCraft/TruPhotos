@@ -55,7 +55,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
   });
 
   // Render a single row of photos
-  const renderItem = ({ item: row, section }: { item: Photo[]; section: SectionListData<Photo[], PhotoSection> }) => {
+  const renderItem = ({ item: row, section: _section }: { item: Photo[]; section: SectionListData<Photo[], PhotoSection> }) => {
     return (
       <View style={styles.row}>
         {row.map((photo) => {

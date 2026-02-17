@@ -82,8 +82,8 @@ android {
         applicationId "com.truphotos"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.0.21"
+        versionCode 18
+        versionName "1.0.22"
     }
     signingConfigs {
         debug {

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import {
   AuthState,
-  PlexUser,
   PlexProfile,
   PlexServer,
   PlexLibrary,

@@ -92,7 +92,7 @@ export async function testServerConnection(
       if (response.status === 401) {
         // Continue trying other URIs
       }
-    } catch (error) {
+    } catch {
       // Connection failed, try next URI
     }
   }
@@ -247,7 +247,8 @@ async function getDirectoryContents(
 }
 
 // Recursively fetch all photos from a directory and its subdirectories
-async function getPhotosRecursively(
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _getPhotosRecursively(
   server: PlexServer,
   token: string,
   directoryKey: string,
@@ -271,7 +272,7 @@ async function getPhotosRecursively(
       photos.push(item);
     } else if (item.key) {
       // This is a folder/album, recurse into it
-      const subPhotos = await getPhotosRecursively(
+      const subPhotos = await _getPhotosRecursively(
         server,
         token,
         item.key,
@@ -568,7 +569,7 @@ export async function getFolderItemCount(
     const data = await response.json();
     const items = data.MediaContainer?.Metadata || [];
     return items.length;
-  } catch (error) {
+  } catch {
     // Silently return 0 on error - this is a background request
     return 0;
   }
