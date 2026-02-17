@@ -93,7 +93,7 @@ export const PhotoViewerScreen: React.FC = () => {
     } finally {
       setLoadingMetadata(false);
     }
-  }, [currentPhoto.id, currentPhoto.fileSize, currentPhoto.width, currentPhoto.filename, currentPhoto.fullUri, enrichedMetadata, selectedServer]);
+  }, [currentPhoto.id, currentPhoto.fileSize, currentPhoto.width, enrichedMetadata, selectedServer]);
 
   // Fetch metadata when info modal opens
   useEffect(() => {
@@ -165,7 +165,7 @@ export const PhotoViewerScreen: React.FC = () => {
         result.success ? 'Success' : 'Error',
         result.message
       );
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to download photo');
     } finally {
       setDownloading(false);

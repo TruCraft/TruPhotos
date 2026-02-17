@@ -3,11 +3,11 @@ import { StyleSheet, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PhotoGrid, ProfileButton, LibraryDropdown, LoadingState } from '../components';
-import { colors, spacing, commonStyles } from '../theme';
+import { colors, commonStyles } from '../theme';
 import { Photo, RootStackParamList, photoToSerializable } from '../types';
 import { groupPhotosByDate } from '../utils/photoUtils';
 import { useAuth } from '../context/AuthContext';
-import { getPhotosFromLibrary, convertPlexPhotosToPhotos, PhotosResult } from '../services/plexService';
+import { getPhotosFromLibrary, convertPlexPhotosToPhotos } from '../services/plexService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -24,7 +24,7 @@ export const PhotosScreen: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchPhotos = useCallback(async (isRefresh: boolean = false) => {
+  const fetchPhotos = useCallback(async (_isRefresh: boolean = false) => {
     if (!selectedServer) {
       setLoading(false);
       setError('No server selected');

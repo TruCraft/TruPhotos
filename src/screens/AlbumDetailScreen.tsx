@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, FlatList, RefreshControl, Platform } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, FlatList, RefreshControl } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from '@react-native-vector-icons/ionicons';
@@ -24,7 +24,7 @@ type ListItem = { type: 'folder'; data: Album } | { type: 'photo'; data: Photo }
 export const AlbumDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<AlbumDetailRouteProp>();
-  const { albumId, albumKey, albumRatingKey, albumTitle, breadcrumb, breadcrumbHistory = [] } = route.params;
+  const { albumKey, albumRatingKey, albumTitle, breadcrumb, breadcrumbHistory = [] } = route.params;
   const { selectedServer } = useAuth();
 
   const [folders, setFolders] = useState<Album[]>([]);
@@ -44,8 +44,8 @@ export const AlbumDetailScreen: React.FC = () => {
       return;
     }
 
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    const accessToken = selectedServer.accessToken;
+    if (!accessToken) {
       setLoading(false);
       setError('No server access token');
       return;
@@ -54,10 +54,10 @@ export const AlbumDetailScreen: React.FC = () => {
     try {
       setError(null);
       // Use ratingKey if available, otherwise fall back to key
-      const contents = await getFolderContents(selectedServer, serverToken, albumRatingKey || albumKey);
+      const contents = await getFolderContents(selectedServer, accessToken, albumRatingKey || albumKey);
 
-      const fetchedFolders = convertPlexAlbumsToAlbums(contents.folders, selectedServer, serverToken);
-      const fetchedPhotos = convertPlexPhotosToPhotos(contents.photos, selectedServer, serverToken);
+      const fetchedFolders = convertPlexAlbumsToAlbums(contents.folders, selectedServer, accessToken);
+      const fetchedPhotos = convertPlexPhotosToPhotos(contents.photos, selectedServer, accessToken);
 
       // Use Plex's original order (no sorting)
 

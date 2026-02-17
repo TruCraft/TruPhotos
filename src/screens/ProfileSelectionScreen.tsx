@@ -19,7 +19,7 @@ import { useAuth } from '../context/AuthContext';
 import { PlexProfile } from '../types';
 
 export const ProfileSelectionScreen: React.FC = () => {
-  const { profiles, selectProfile, logout, user, isLoading } = useAuth();
+  const { profiles, selectProfile, logout, user } = useAuth();
   const [pinModalVisible, setPinModalVisible] = useState(false);
   const [selectedProfileForPin, setSelectedProfileForPin] = useState<PlexProfile | null>(null);
   const [pin, setPin] = useState('');
@@ -76,8 +76,8 @@ export const ProfileSelectionScreen: React.FC = () => {
       setPinModalVisible(false);
       setPin('');
       setSelectedProfileForPin(null);
-    } catch (error) {
-      console.error('Failed to switch profile with PIN:', error);
+    } catch {
+      // Expected error when PIN is incorrect - only show UI alert, no console logging
       Alert.alert('Incorrect PIN', 'Please try again.');
       setPin('');
     } finally {
