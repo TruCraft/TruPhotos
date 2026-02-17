@@ -13,6 +13,8 @@ jobs:
   build:
     name: Build Android AAB
     runs-on: ubuntu-latest
+    # Only run on the upstream repo (TruCraft/TruPhotos)
+    if: github.repository == 'TruCraft/TruPhotos'
 
     steps:
       - name: Checkout repository
